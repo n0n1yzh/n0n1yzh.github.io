@@ -1,9 +1,25 @@
 ---
-title: 开篇
+title: Hexo相关指令及上传中的一些问题和解决(长期更新)
 date: 2020-11-02 20:03:16
+updated:
+tags:
 categories: 总之就是很杂很乱
-top_img: ![](/images/wallhaven-j5mz95.png)
-cover: https://s1.ax1x.com/2020/11/04/Bc7wAH.jpg
+keywords:
+description:
+top_img: https://s3.ax1x.com/2020/11/22/D8rEH1.jpg
+comments:
+cover: false
+toc:
+toc_number:
+copyright:
+copyright_author:
+copyright_author_href:
+copyright_url:
+copyright_info:
+mathjax: true
+katex: 
+aplayer:
+highlight_shrink:
 aside: false
 plugins: markdown-it-emoji
 ---
@@ -82,20 +98,5 @@ $ hexo d
 
 部署更新
 
-:alarm_clock: 在某些情况下会出现 Spawn failed 的报错 直接删除根目录的 .deploy_git 文件重新部署可以解决。
+> :alarm_clock: 在某些情况下会出现 Spawn failed 的报错 直接删除根目录的 .deploy_git 文件重新部署可以解决。
 
-
-
-
-
-### 为什么要建站呢？
-
-这个之前没想过，但是最近这个月不说技术上有多少提升，至少我的眼界真的开拓了好多。然后也知道了在一个很好的氛围内我能有多肝了，十月真的一直在肝，然后把之前暑假颓废染上的网瘾给戒了。
-
-以前不知道有些东西原来这么 🐂 🍺，现在知道了，那就开始学。
-
-目的的话，由于本人在大一下学期前都毫无计算机基础，然后突然认识到自己好 ​ :hot_pepper: :baby_chick:  所以其实也就是给自己作为一个积累技术和记录成长的地方吧。
-
-删了好多，因为觉得好尴尬。
-
-完。

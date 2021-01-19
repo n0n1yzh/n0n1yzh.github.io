@@ -13,10 +13,6 @@ plugins: markdown-it-emoji
 
 ### :clock1: U E S T C e r
 
-### :clock130: 目 前 信 息 与 通 信 工 程 学 院 大 二 在 读
+### :clock130: 信 息 与 通 信 工 程 学 院 大 二 在 读
 
-### :clock10: :desktop_computer: :computer_mouse: :keyboard: 爱 好 者
-
-### :clock1030: 现 在 是 萌 新​
-
-### :clock11: 正 在 自 学 相 关 ​ :computer:  知 识 
+### :clock10: 萌 新 一 个
