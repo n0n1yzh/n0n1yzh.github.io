@@ -3,12 +3,13 @@
 ## Source: https://github.com/hexojs/hexo/
 
 # Site
-title: YZH的记事薄
+title: YZH's Training Lab
 subtitle:
-description: '彼岸花，后面忘了'
+#description: '彼岸花，后面忘了'
+description:
 keywords:
-author: n0n1yzh
-language: zh-CN
+author: N0N1YZH
+language: en
 timezone: ''
 
 # URL
@@ -98,7 +99,7 @@ ignore:
 # Extensions
 ## Plugins: https://hexo.io/plugins/
 ## Themes: https://hexo.io/themes/
-theme: butterfly
+theme: next
 
 # Deployment
 ## Docs: https://hexo.io/docs/one-command-deployment
