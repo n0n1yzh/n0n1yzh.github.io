@@ -1,5 +1,5 @@
 ---
-title: my-first-blog
+title: my first blog
 date: 2020-10-12 22:46:20
 tags:
 ---
@@ -9,3 +9,4 @@ import Love
 let myFirstBlog = "hello world"
 print(myFirstBlog)
 ```
+
