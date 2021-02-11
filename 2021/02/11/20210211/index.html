@@ -1,0 +1,531 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 5.2.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"example.com","root":"/","scheme":"Mist","version":"7.8.0","exturl":true,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}};
+  </script>
+
+  <meta name="description" content="主席树 主席树，是一种可持久化的数据结构，也叫可持久化线段树。其可以在空间和时间都非常可观的情况下实现对线段树区间的更新。主席树可以说是多颗线段树的集合，常用来处理在线问题。 目前知道的关于主席树的应用有：  回退到第 $k$ 次对区间进行操作的结果 然后再对区间进行操作 or 询问 多次询问区间 $[l,r]$ 中第 $k$ 大的数  空间问题 关于空间存储，对于 $n$ 个值，某一历史时刻的">
+<meta property="og:type" content="article">
+<meta property="og:title" content="主席树">
+<meta property="og:url" content="http://example.com/2021/02/11/20210211/index.html">
+<meta property="og:site_name" content="YZH&#39;s Training Lab">
+<meta property="og:description" content="主席树 主席树，是一种可持久化的数据结构，也叫可持久化线段树。其可以在空间和时间都非常可观的情况下实现对线段树区间的更新。主席树可以说是多颗线段树的集合，常用来处理在线问题。 目前知道的关于主席树的应用有：  回退到第 $k$ 次对区间进行操作的结果 然后再对区间进行操作 or 询问 多次询问区间 $[l,r]$ 中第 $k$ 大的数  空间问题 关于空间存储，对于 $n$ 个值，某一历史时刻的">
+<meta property="og:locale" content="en_US">
+<meta property="article:published_time" content="2021-02-11T09:45:54.000Z">
+<meta property="article:modified_time" content="2021-02-11T15:25:45.605Z">
+<meta property="article:author" content="N0N1YZH">
+<meta name="twitter:card" content="summary">
+
+<link rel="canonical" href="http://example.com/2021/02/11/20210211/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'en'
+  };
+</script>
+
+  <title>主席树 | YZH's Training Lab</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="Toggle navigation bar">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">YZH's Training Lab</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>Home</a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>Categories</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>Archives</a>
+
+  </li>
+  </ul>
+</nav>
+
+
+
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="en">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2021/02/11/20210211/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="N0N1YZH">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="YZH's Training Lab">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          主席树
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">Posted on</span>
+              
+
+              <time title="Created: 2021-02-11 17:45:54 / Modified: 23:25:45" itemprop="dateCreated datePublished" datetime="2021-02-11T17:45:54+08:00">2021-02-11</time>
+            </span>
+
+          
+  
+  <span class="post-meta-item">
+    
+      <span class="post-meta-item-icon">
+        <i class="far fa-comment"></i>
+      </span>
+      <span class="post-meta-item-text">Valine: </span>
+    
+    <a title="valine" href="/2021/02/11/20210211/#valine-comments" itemprop="discussionUrl">
+      <span class="post-comments-count valine-comment-count" data-xid="/2021/02/11/20210211/" itemprop="commentCount"></span>
+    </a>
+  </span>
+  
+  
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <a id="more"></a>
+<h1>主席树</h1>
+<p>主席树，是一种可持久化的数据结构，也叫可持久化线段树。其可以在空间和时间都非常可观的情况下实现对线段树区间的更新。主席树可以说是多颗线段树的集合，常用来处理在线问题。</p>
+<p>目前知道的关于主席树的应用有：</p>
+<ul>
+<li>回退到第 $k$ 次对区间进行操作的结果 然后再对区间进行操作 or 询问</li>
+<li>多次询问区间 $[l,r]$ 中第 $k$ 大的数</li>
+</ul>
+<h2 id="空间问题"><a class="header-anchor" href="#空间问题"></a>空间问题</h2>
+<p>关于空间存储，对于 $n$ 个值，某一历史时刻的主席树（看做一棵线段树）需要 $2n-1$ 个点，这似乎很好理解，因为主席树的建树创建节点是线性创建的（++tot）。</p>
+<p>值得注意的是<strong>线段树和主席树都不一定是完全二叉树</strong>，我一开始看的关于这两个数据结构的讲解全是用的完全二叉树的图来讲的，加上当时看线段树的时候也没有纠结 $4n-5$ 是怎么来的，于是到主席树这里，我大概都把他们当成了完全二叉树，因为完全二叉树的节点 $2n-1$ 很好理解，主席树的一棵线段树的点是 $2n-1$ ，那怎么都得是完全二叉树吧？ 那线段树为什么又是 $4n-5$ 呢？</p>
+<p>要搞清楚我们首先要清楚这两种树都不一定是完全二叉树，然后还要清楚在建树的过程中，主席树是线性建树，而线段树类似于跳点建树。</p>
+<p>先来看下这两种树的建树代码：</p>
+<p><strong>线段树：</strong></p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">int</span> a[SIZE], v[<span class="number">4</span>*SIZE<span class="number">-5</span>];</span><br><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">bt</span><span class="params">(<span class="keyword">int</span> root, <span class="keyword">int</span> l, <span class="keyword">int</span> r)</span> </span>&#123;</span><br><span class="line">    <span class="keyword">if</span>(l == r) &#123; v[root] = a[l]; <span class="keyword">return</span>; &#125;</span><br><span class="line">    <span class="keyword">int</span> m = l+r &gt;&gt; <span class="number">1</span>;</span><br><span class="line">    bt(<span class="number">2</span>*root, l, m), bt(<span class="number">2</span>*root+<span class="number">1</span>, m+<span class="number">1</span>, r);</span><br><span class="line">    v[root] = v[<span class="number">2</span>*root] + v[<span class="number">2</span>*root+<span class="number">1</span>];</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p><strong>主席树：</strong></p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">int</span> tot, a[SIZE], v[<span class="number">20</span>*SIZE], rt[<span class="number">20</span>*SIZE], lson[<span class="number">20</span>*SIZE], rson[<span class="number">20</span>*SIZE];</span><br><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">bt</span><span class="params">(<span class="keyword">int</span> &amp;root, <span class="keyword">int</span> l, <span class="keyword">int</span> r)</span> </span>&#123;</span><br><span class="line">    root = ++tot;</span><br><span class="line">    <span class="keyword">if</span>(l == r) &#123; v[root] = a[l]; <span class="keyword">return</span>; &#125;</span><br><span class="line">    <span class="keyword">int</span> mid = l+r &gt;&gt; <span class="number">1</span>;</span><br><span class="line">    bt(lson[root], l, mid), bt(rson[root], mid+<span class="number">1</span>, r);</span><br><span class="line">    v[root] = v[lson[root]] + v[rson[root]];</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>在线段树建树过程中，通过递归对当前结点乘2（乘2加1）去找孩子结点，而区间划分 $[l,mid]$ 和 $[mid+1,r]$ 决定了所组成的线段树非常有可能不是一棵完全二叉树，而在叶子结点为 $n$ 且不是完全二叉树的情况下，节点的编号会超出 $2n-1$ 。但是主席树的建树却不一样，每次的结点编号都是前一个编号的值加一，这样即使不是一颗完全二叉树，在叶子结点为 $n$ 的情况下也和完全二叉树一样只需要 $2n-1$ 个点来存储。</p>
+<p>举例来说明：</p>
+<p>对一个区间为 $[1,6]$ 的数组 $[4,5,3,7,2,1]$</p>
+<p>对它建立线段树：</p>
+<img src = 'https://ftp.bmp.ovh/imgs/2021/02/b58ec8a8fa183279.png' />
+<p>建立主席树：</p>
+<img src = 'https://ftp.bmp.ovh/imgs/2021/02/42f66d295447459a.png' />
+<p>结点的编号已经说明了一切。</p>
+<p>接着说主席树，一开始建树开了 $2n-1$ 个点，之后每次更新至多修改 $\lceil{log_2{n}}\rceil+1$ 次，需要单独开这么多个点，$\lceil{log_2{n}\rceil+1}$ 为这棵树的深度，进行 $n$ 次修改， $n(\lceil{log_2{n}}\rceil+1)$ ，总的需要开 $2n-1 + n(\lceil{log_2{n}}\rceil+1) $ 这么多个点，对于数据范围 $n\le10^5$ ，至多不会超过 $n$ 的 20 倍。</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">int</span> tot, a[SIZE], v[<span class="number">20</span>*SIZE], rt[<span class="number">20</span>*SIZE], lson[<span class="number">20</span>*SIZE], rson[<span class="number">20</span>*SIZE];</span><br></pre></td></tr></table></figure>
+<p>其中 <code>rt[]</code> 数组使用来存根节点的，可以通过该数组调用不同历史版本的线段树。</p>
+<h2 id="相关操作的板子"><a class="header-anchor" href="#相关操作的板子"></a>相关操作的板子</h2>
+<h3 id="区间更新中的push-up-和-push-down"><a class="header-anchor" href="#区间更新中的push-up-和-push-down"></a><strong>区间更新中的push up 和 push down</strong></h3>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">push_up</span><span class="params">(<span class="keyword">int</span> root)</span> </span>&#123;</span><br><span class="line">    v[root] = v[lson[root]] + v[rson[root]]; </span><br><span class="line">&#125;</span><br><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">push_down</span><span class="params">(<span class="keyword">int</span> root, <span class="keyword">int</span> l, <span class="keyword">int</span> r)</span> </span>&#123;</span><br><span class="line">    <span class="keyword">int</span> m = l+r &gt;&gt; <span class="number">1</span>;</span><br><span class="line">    <span class="keyword">if</span>(lz[root]) &#123;</span><br><span class="line">        v[lson[root]] += lz[root]*(m-l+<span class="number">1</span>), v[rson[root]] += lz[root]*(r-m);</span><br><span class="line">        lz[lson[root]] += lz[root], lz[rson[root]] += lz[root];</span><br><span class="line">        lz[root] = <span class="number">0</span>;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h3 id="建树"><a class="header-anchor" href="#建树"></a>建树</h3>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">int</span> tot, a[SIZE], v[<span class="number">20</span>*SIZE], rt[<span class="number">20</span>*SIZE], lson[<span class="number">20</span>*SIZE], rson[<span class="number">20</span>*SIZE];</span><br><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">bt</span><span class="params">(<span class="keyword">int</span> &amp;root, <span class="keyword">int</span> l, <span class="keyword">int</span> r)</span> </span>&#123;</span><br><span class="line">    root = ++tot;</span><br><span class="line">    <span class="keyword">if</span>(l == r) &#123; v[root] = a[l]; <span class="keyword">return</span>; &#125;</span><br><span class="line">    <span class="keyword">int</span> mid = l+r &gt;&gt; <span class="number">1</span>;</span><br><span class="line">    bt(lson[root], l, mid), bt(rson[root], mid+<span class="number">1</span>, r);</span><br><span class="line">    push_up(root);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>建树调用：</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">bt(rt[<span class="number">0</span>], <span class="number">1</span>, n);</span><br></pre></td></tr></table></figure>
+<h3 id="更新"><a class="header-anchor" href="#更新"></a>更新</h3>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">update</span><span class="params">(<span class="keyword">int</span> L, <span class="keyword">int</span> R, <span class="keyword">int</span> l, <span class="keyword">int</span> r, <span class="keyword">int</span> &amp;root, <span class="keyword">int</span> lastRoot, <span class="keyword">int</span> val)</span> </span>&#123;</span><br><span class="line">    root = ++tot;</span><br><span class="line">    lson[root] = lson[lastRoot], rson[root] = rson[lastRoot];</span><br><span class="line">    lz[root] = lz[lastRoot], v[root] = v[lastRoot];</span><br><span class="line">    <span class="keyword">if</span>(L &lt;= l &amp;&amp; r &lt;= R) &#123;</span><br><span class="line">        v[root] += val*(r-l+<span class="number">1</span>), lz[root] += val;</span><br><span class="line">        <span class="keyword">return</span>;</span><br><span class="line">    &#125;</span><br><span class="line">    push_down(root, l, r);</span><br><span class="line">    <span class="keyword">int</span> m = l+r &gt;&gt; <span class="number">1</span>;</span><br><span class="line">    <span class="keyword">if</span>(L &lt;= m) update(L, R, l, m, lson[root], lson[lastRoot], val);</span><br><span class="line">    <span class="keyword">if</span>(m &lt; R) update(L, R, m+<span class="number">1</span>, r, rson[root], rson[lastRoot], val);</span><br><span class="line">    push_up(root);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>更新调用：</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">update(L, R, <span class="number">1</span>, n, rt[i], rt[i<span class="number">-1</span>], val);</span><br></pre></td></tr></table></figure>
+<h3 id="查询"><a class="header-anchor" href="#查询"></a>查询</h3>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">query</span><span class="params">(<span class="keyword">int</span> L, <span class="keyword">int</span> R, <span class="keyword">int</span> l, <span class="keyword">int</span> r, <span class="keyword">int</span> root)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="keyword">if</span> (L &lt;= l &amp;&amp; r &lt;= R)</span><br><span class="line">        <span class="keyword">return</span> v[root];</span><br><span class="line">    push_down(root, l, r);</span><br><span class="line">    <span class="keyword">int</span> m = (l + r) &gt;&gt; <span class="number">1</span>, sum = <span class="number">0</span>;</span><br><span class="line">    <span class="keyword">if</span> (L &lt;= m)</span><br><span class="line">        sum = query(L, R, l, m, lson[root]);</span><br><span class="line">    <span class="keyword">if</span> (m &lt; R)</span><br><span class="line">        sum += query(L, R, m + <span class="number">1</span>, r, rson[root]); <span class="comment">// 和上面的函数的 m 不能重合 -&gt; m+1</span></span><br><span class="line">    push_up(root);</span><br><span class="line">    <span class="keyword">return</span> sum;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>代码模板来源：<span class="exturl" data-url="aHR0cHM6Ly93d3cuamlhbnNodS5jb20vcC9lMWQ0NmE3MTRmYTg=">https://www.jianshu.com/p/e1d46a714fa8<i class="fa fa-external-link-alt"></i></span></p>
+<p><span class="exturl" data-url="aHR0cHM6Ly93d3cubHVvZ3UuY29tLmNuL3Byb2JsZW0vUDM5MTk=">P3919 【模板】可持久化线段树 1（可持久化数组）<i class="fa fa-external-link-alt"></i></span></p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;bits/stdc++.h&gt;</span></span></span><br><span class="line"><span class="keyword">using</span> <span class="keyword">namespace</span> <span class="built_in">std</span>;</span><br><span class="line"></span><br><span class="line"><span class="keyword">const</span> <span class="keyword">int</span> maxn = <span class="number">1000005</span>;</span><br><span class="line"></span><br><span class="line"><span class="keyword">template</span> &lt;<span class="keyword">typename</span> Type&gt;</span><br><span class="line"><span class="function"><span class="keyword">inline</span> <span class="keyword">void</span> <span class="title">read</span><span class="params">(Type &amp;in)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    in = <span class="number">0</span>;</span><br><span class="line">    Type f = <span class="number">1</span>;</span><br><span class="line">    <span class="keyword">char</span> ch = getchar();</span><br><span class="line">    <span class="keyword">while</span> (ch &lt; <span class="string">&#x27;0&#x27;</span> || ch &gt; <span class="string">&#x27;9&#x27;</span>)</span><br><span class="line">    &#123;</span><br><span class="line">        <span class="keyword">if</span> (ch == <span class="string">&#x27;-&#x27;</span>)</span><br><span class="line">            f = <span class="number">-1</span>;</span><br><span class="line">        ch = getchar();</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">while</span> (ch &gt;= <span class="string">&#x27;0&#x27;</span> &amp;&amp; ch &lt;= <span class="string">&#x27;9&#x27;</span>)</span><br><span class="line">    &#123;</span><br><span class="line">        in = in * <span class="number">10</span> + ch - <span class="string">&#x27;0&#x27;</span>;</span><br><span class="line">        ch = getchar();</span><br><span class="line">    &#125;</span><br><span class="line">    in *= f;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">int</span> tot = <span class="number">0</span>, rt[maxn * <span class="number">20</span>], lson[maxn * <span class="number">20</span>], rson[maxn * <span class="number">20</span>], v[maxn * <span class="number">20</span>], lz[maxn * <span class="number">20</span>], a[maxn];</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">bt</span><span class="params">(<span class="keyword">int</span> &amp;root, <span class="keyword">int</span> l, <span class="keyword">int</span> r)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    root = tot++;</span><br><span class="line">    <span class="keyword">if</span> (l == r)</span><br><span class="line">    &#123;</span><br><span class="line">        v[root] = a[l];</span><br><span class="line">        <span class="keyword">return</span>;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">int</span> m = (l + r) &gt;&gt; <span class="number">1</span>;</span><br><span class="line">    bt(lson[root], l, m), bt(rson[root], m + <span class="number">1</span>, r);</span><br><span class="line">&#125;</span><br><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">update</span><span class="params">(<span class="keyword">int</span> q, <span class="keyword">int</span> l, <span class="keyword">int</span> r, <span class="keyword">int</span> &amp;root, <span class="keyword">int</span> lastRoot, <span class="keyword">int</span> val)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    root = ++tot;</span><br><span class="line">    lson[root] = lson[lastRoot], rson[root] = rson[lastRoot];</span><br><span class="line">    v[root] = v[lastRoot];</span><br><span class="line">    <span class="keyword">if</span> (l == r)</span><br><span class="line">    &#123;</span><br><span class="line">        v[root] = val;</span><br><span class="line">        <span class="keyword">return</span>;</span><br><span class="line">    &#125;;</span><br><span class="line">    <span class="keyword">int</span> m = l + r &gt;&gt; <span class="number">1</span>;</span><br><span class="line">    <span class="keyword">if</span> (q &lt;= m)</span><br><span class="line">        update(q, l, m, lson[root], lson[lastRoot], val);</span><br><span class="line">    <span class="keyword">else</span></span><br><span class="line">    &#123;</span><br><span class="line">        update(q, m + <span class="number">1</span>, r, rson[root], rson[lastRoot], val);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">query</span><span class="params">(<span class="keyword">int</span> q, <span class="keyword">int</span> l, <span class="keyword">int</span> r, <span class="keyword">int</span> root)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="keyword">if</span> (l == r)</span><br><span class="line">        <span class="keyword">return</span> v[root];</span><br><span class="line">    <span class="keyword">int</span> m = (l + r) &gt;&gt; <span class="number">1</span>;</span><br><span class="line">    <span class="keyword">if</span> (q &lt;= m)</span><br><span class="line">        <span class="keyword">return</span> query(q, l, m, lson[root]);</span><br><span class="line">    <span class="keyword">else</span></span><br><span class="line">        <span class="keyword">return</span> query(q, m + <span class="number">1</span>, r, rson[root]);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">main</span><span class="params">()</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="keyword">int</span> n, m;</span><br><span class="line">    <span class="built_in">cin</span> &gt;&gt; n &gt;&gt; m;</span><br><span class="line">    <span class="keyword">for</span> (<span class="keyword">int</span> i = <span class="number">1</span>; i &lt;= n; i++)</span><br><span class="line">    &#123;</span><br><span class="line">        <span class="built_in">cin</span> &gt;&gt; a[i];</span><br><span class="line">    &#125;</span><br><span class="line">    bt(rt[<span class="number">0</span>], <span class="number">1</span>, n);</span><br><span class="line">    <span class="keyword">int</span> x, y, z, w;</span><br><span class="line">    <span class="keyword">for</span> (<span class="keyword">int</span> i = <span class="number">1</span>; i &lt;= m; i++)</span><br><span class="line">    &#123;</span><br><span class="line">        <span class="comment">// cin &gt;&gt; x &gt;&gt; y;</span></span><br><span class="line">        read(x), read(y);</span><br><span class="line">        <span class="keyword">if</span> (y == <span class="number">1</span>)</span><br><span class="line">        &#123;</span><br><span class="line">            <span class="comment">// cin &gt;&gt; z &gt;&gt; w;</span></span><br><span class="line">            read(z), read(w);</span><br><span class="line">            update(z, <span class="number">1</span>, n, rt[i], rt[x], w);</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">else</span> <span class="keyword">if</span> (y == <span class="number">2</span>)</span><br><span class="line">        &#123;</span><br><span class="line">            <span class="comment">// cin &gt;&gt; z;</span></span><br><span class="line">            read(z);</span><br><span class="line">            rt[i] = rt[x];</span><br><span class="line">            <span class="built_in">cout</span> &lt;&lt; query(z, <span class="number">1</span>, n, rt[i]) &lt;&lt; <span class="built_in">endl</span>;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p><s>真就是算法思路是是一回事，写代码是另一回事。</s></p>
+
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2021/01/25/Listing-images-with-FileManager/" rel="prev" title="Listing images with FileManager">
+      <i class="fa fa-chevron-left"></i> Listing images with FileManager
+    </a></div>
+      <div class="post-nav-item"></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+    <div class="comments" id="valine-comments"></div>
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          Table of Contents
+        </li>
+        <li class="sidebar-nav-overview">
+          Overview
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link"><span class="nav-number">1.</span> <span class="nav-text">主席树</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%A9%BA%E9%97%B4%E9%97%AE%E9%A2%98"><span class="nav-number">1.1.</span> <span class="nav-text">空间问题</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%9B%B8%E5%85%B3%E6%93%8D%E4%BD%9C%E7%9A%84%E6%9D%BF%E5%AD%90"><span class="nav-number">1.2.</span> <span class="nav-text">相关操作的板子</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%8C%BA%E9%97%B4%E6%9B%B4%E6%96%B0%E4%B8%AD%E7%9A%84push-up-%E5%92%8C-push-down"><span class="nav-number">1.2.1.</span> <span class="nav-text">区间更新中的push up 和 push down</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%BB%BA%E6%A0%91"><span class="nav-number">1.2.2.</span> <span class="nav-text">建树</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%9B%B4%E6%96%B0"><span class="nav-number">1.2.3.</span> <span class="nav-text">更新</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%9F%A5%E8%AF%A2"><span class="nav-number">1.2.4.</span> <span class="nav-text">查询</span></a></li></ol></li></ol></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">N0N1YZH</p>
+  <div class="site-description" itemprop="description"></div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">3</span>
+          <span class="site-state-item-name">posts</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+          
+        <span class="site-state-item-count">2</span>
+        <span class="site-state-item-name">categories</span></a>
+      </div>
+  </nav>
+</div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2021</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">N0N1YZH</span>
+</div>
+
+<!--
+  <div class="powered-by">Powered by <span class="exturl theme-link" data-url="aHR0cHM6Ly9oZXhvLmlv">Hexo</span> & <span class="exturl theme-link" data-url="aHR0cHM6Ly9taXN0LnRoZW1lLW5leHQub3Jn">NexT.Mist</span>
+  </div>
+-->
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/muse.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+      
+
+<script>
+  if (typeof MathJax === 'undefined') {
+    window.MathJax = {
+      loader: {
+          load: ['[tex]/mhchem'],
+        source: {
+          '[tex]/amsCd': '[tex]/amscd',
+          '[tex]/AMScd': '[tex]/amscd'
+        }
+      },
+      tex: {
+        inlineMath: {'[+]': [['$', '$']]},
+          packages: {'[+]': ['mhchem']},
+        tags: 'ams'
+      },
+      options: {
+        renderActions: {
+          findScript: [10, doc => {
+            document.querySelectorAll('script[type^="math/tex"]').forEach(node => {
+              const display = !!node.type.match(/; *mode=display/);
+              const math = new doc.options.MathItem(node.textContent, doc.inputJax[0], display);
+              const text = document.createTextNode('');
+              node.parentNode.replaceChild(text, node);
+              math.start = {node: text, delim: '', n: 0};
+              math.end = {node: text, delim: '', n: 0};
+              doc.math.push(math);
+            });
+          }, '', false],
+          insertedScript: [200, () => {
+            document.querySelectorAll('mjx-container').forEach(node => {
+              let target = node.parentNode;
+              if (target.nodeName.toLowerCase() === 'li') {
+                target.parentNode.classList.add('has-jax');
+              }
+            });
+          }, '', false]
+        }
+      }
+    };
+    (function () {
+      var script = document.createElement('script');
+      script.src = '//cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js';
+      script.defer = true;
+      document.head.appendChild(script);
+    })();
+  } else {
+    MathJax.startup.document.state(0);
+    MathJax.texReset();
+    MathJax.typeset();
+  }
+</script>
+
+    
+
+  
+
+
+<script>
+NexT.utils.loadComments(document.querySelector('#valine-comments'), () => {
+  NexT.utils.getScript('//unpkg.com/valine/dist/Valine.min.js', () => {
+    var GUEST = ['nick', 'mail', 'link'];
+    var guest = 'nick,mail,link';
+    guest = guest.split(',').filter(item => {
+      return GUEST.includes(item);
+    });
+    new Valine({
+      el         : '#valine-comments',
+      verify     : false,
+      notify     : false,
+      appId      : 'PmjflOpk2ATDtxdJhPA1i1pt-gzGzoHsz',
+      appKey     : 'ke15awUd7q8qYJCzxMmFrL92',
+      placeholder: "Just go go",
+      avatar     : 'mm',
+      meta       : guest,
+      pageSize   : '10' || 10,
+      visitor    : false,
+      lang       : '' || 'zh-cn',
+      path       : location.pathname,
+      recordIP   : false,
+      serverURLs : ''
+    });
+  }, window.Valine);
+});
+</script>
+
+</body>
+</html>
