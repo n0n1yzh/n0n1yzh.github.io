@@ -7,11 +7,7 @@ categories:
 tags:
 ---
 
-# 
-
-<!-- more -->
-
-The images I've provided you with come from the National Oceanic and Atmospheric Administration (NOAA), which is a US government agency and thus produces public domain content that we can freely reuse. Once they are copied into your project, Xcode will automatically build them into your finished app so that you can access them.
+The images I've provided you with come from the National Oceanic and Atmospheric Administration <!-- more -->(NOAA), which is a US government agency and thus produces public domain content that we can freely reuse. Once they are copied into your project, Xcode will automatically build them into your finished app so that you can access them.
 
 Behind the scenes, an iOS app is actually a directory containing lots of files: the binary itself (that's the compiled version of your code, ready to run), all the media assets your app uses, any visual layout files you have, plus a variety of other things such as metadata and security entitlements.
 
